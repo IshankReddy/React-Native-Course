@@ -1,46 +1,38 @@
-import Animated, {
-  useSharedValue,
-  withTiming,
-  useAnimatedStyle,
-  Easing,
-} from "react-native-reanimated";
-import { View, Button } from "react-native";
+import React, { useState } from "react";
+import { SafeAreaProvider } from "react-native-safe-area-context";
+import { ThemeProvider, createTheme } from "@rneui/themed";
+import TodoList from "./src/components/TodoList";
 
-export default function AnimatedStyleUpdateExample(props) {
-  const randomWidth = useSharedValue(10);
+export default function App() {
+  const [mode, setMode] = useState("light");
 
-  const config = {
-    duration: 500,
-    easing: Easing.bezier(0.5, 0.01, 0, 1),
-  };
-
-  const style = useAnimatedStyle(() => {
-    return {
-      width: withTiming(randomWidth.value, config),
-    };
+  const theme = createTheme({
+    lightColors: {
+      primary: "#2089dc",
+      background: "#ffffff",
+      text: "#000000",
+      grey3: "#666666",
+      error: "#ff0000",
+    },
+    darkColors: {
+      primary: "#73c0ff",
+      background: "#1a1a1a",
+      text: "#ffffff",
+      grey3: "#999999",
+      error: "#ff4444",
+    },
+    mode: mode,
   });
 
+  const toggleTheme = () => {
+    setMode(mode === "light" ? "dark" : "light");
+  };
+
   return (
-    <View
-      style={{
-        flex: 1,
-        alignItems: "center",
-        justifyContent: "center",
-        flexDirection: "column",
-      }}
-    >
-      <Animated.View
-        style={[
-          { width: 100, height: 80, backgroundColor: "black", margin: 30 },
-          style,
-        ]}
-      />
-      <Button
-        title="toggle"
-        onPress={() => {
-          randomWidth.value = Math.random() * 350;
-        }}
-      />
-    </View>
+    <SafeAreaProvider>
+      <ThemeProvider theme={theme}>
+        <TodoList onToggleTheme={toggleTheme} />
+      </ThemeProvider>
+    </SafeAreaProvider>
   );
 }
